@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${param.lang ?: 'es'}">
+<head>
+    <meta charset="UTF-8">
+    <title>Planificador de Viajes</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+    <header>
+        <h1>✈ Planificador de Viajes</h1>
+        <div class="header-right">
+            <div class="language-selector">
+                <a th:href="@{/web/menu(lang='es')}">🇪🇸</a>
+                <a th:href="@{/web/menu(lang='en')}">🇬🇧</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="cards-container">
+
+        <a th:href="@{/web/itinerarios/nuevo(lang=${param.lang} ?: 'es')}" class="card">
+            <div class="icon">🗺</div>
+            <span>Planificar viaje</span>
+        </a>
+
+        <a th:href="@{/web/itinerarios/lista(lang=${param.lang} ?: 'es')}" class="card">
+            <div class="icon">📋</div>
+            <span>Mis itinerarios</span>
+        </a>
+
+        <a th:href="@{/web/destinos/lista(lang=${param.lang} ?: 'es')}" class="card">
+            <div class="icon">🌍</div>
+            <span>Destinos</span>
+        </a>
+
+        <a th:href="@{/web/lugares/lista(lang=${param.lang} ?: 'es')}" class="card">
+            <div class="icon">📍</div>
+            <span>Lugares de interés</span>
+        </a>
+
+        <a href="/swagger-ui.html" class="card">
+            <div class="icon">📡</div>
+            <span>API Docs</span>
+        </a>
+
+    </main>
+
+</body>
+</html>
