@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${param.lang ?: 'es'}">
+<head>
+    <meta charset="UTF-8">
+    <title>Lugares de interés</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+    <header>
+        <h1>📍 Lugares de interés</h1>
+        <div class="language-selector">
+            <a th:href="@{/web/lugares/lista(lang='es')}">🇪🇸</a>
+            <a th:href="@{/web/lugares/lista(lang='en')}">🇬🇧</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="actions">
+            <a th:href="@{/web/lugares/nuevo}" class="action-card">➕ Nuevo lugar</a>
+            <a th:href="@{/web/menu}" class="action-card">🏠 Menú principal</a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Tipo</th>
+                    <th>Precio (€)</th>
+                    <th>Duración (h)</th>
+                    <th>Destino</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="l : ${lugares}">
+                    <td th:text="${l.id.value}"></td>
+                    <td th:text="${l.nombre}"></td>
+                    <td>
+                        <span class="badge" th:text="${l.tipo}"
+                              th:classappend="${l.tipo == 'cultura'} ? 'badge-cultura' : (${l.tipo == 'naturaleza'} ? 'badge-naturaleza' : (${l.tipo == 'gastronomia'} ? 'badge-gastronomia' : 'badge-ocio'))">
+                        </span>
+                    </td>
+                    <td th:text="${l.precio + ' €'}"></td>
+                    <td th:text="${l.duracionVisita + ' h'}"></td>
+                    <td>
+                        <span th:each="d : ${destinos}" th:if="${d.id.value == l.destinoId.value}" th:text="${d.nombre}"></span>
+                    </td>
+                    <td>
+                        <a th:href="@{/web/lugares/editar/{id}(id=${l.id.value})}" class="btn btn-edit">✏</a>
+                        <form th:action="@{/web/lugares/borrar/{id}(id=${l.id.value})}" method="post" style="display:inline">
+                            <button type="submit" class="btn btn-delete" onclick="return confirm('¿Eliminar este lugar?')">🗑</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+</body>
+</html>

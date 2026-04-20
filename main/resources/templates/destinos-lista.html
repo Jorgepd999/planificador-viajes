@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${param.lang ?: 'es'}">
+<head>
+    <meta charset="UTF-8">
+    <title>Destinos turísticos</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+    <header>
+        <h1>🌍 Destinos turísticos</h1>
+        <div class="language-selector">
+            <a th:href="@{/web/destinos/lista(lang='es')}">🇪🇸</a>
+            <a th:href="@{/web/destinos/lista(lang='en')}">🇬🇧</a>
+        </div>
+    </header>
+
+    <main>
+        <div class="actions">
+            <a th:href="@{/web/destinos/nuevo}" class="action-card">➕ Nuevo destino</a>
+            <a th:href="@{/web/menu}" class="action-card">🏠 Menú principal</a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Destino</th>
+                    <th>País</th>
+                    <th>Descripción</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="d : ${destinos}">
+                    <td th:text="${d.id.value}"></td>
+                    <td th:text="${d.nombre}"></td>
+                    <td th:text="${d.pais}"></td>
+                    <td th:text="${d.descripcion}"></td>
+                    <td>
+                        <a th:href="@{/web/destinos/editar/{id}(id=${d.id.value})}" class="btn btn-edit">✏</a>
+                        <form th:action="@{/web/destinos/borrar/{id}(id=${d.id.value})}" method="post" style="display:inline">
+                            <button type="submit" class="btn btn-delete" onclick="return confirm('¿Eliminar este destino?')">🗑</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${param.lang ?: 'es'}">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Destino</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+    <header>
+        <h1>✏ Editar destino</h1>
+    </header>
+
+    <main>
+        <div class="table-container" style="padding:30px; max-width:600px; margin:auto;">
+            <form th:action="@{/web/destinos/editar/{id}(id=${destino.id.value})}" method="POST">
+
+                <div class="form-group">
+                    <label>Nombre del destino:</label>
+                    <input type="text" name="nombre" th:value="${destino.nombre}" required minlength="2">
+                </div>
+
+                <div class="form-group">
+                    <label>País:</label>
+                    <input type="text" name="pais" th:value="${destino.pais}" required minlength="2">
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción:</label>
+                    <textarea name="descripcion" rows="3" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:5px;" th:text="${destino.descripcion}"></textarea>
+                </div>
+
+                <div class="actions" style="margin-top:20px;">
+                    <button type="submit" class="action-card">💾 Guardar cambios</button>
+                    <a th:href="@{/web/destinos/lista}" class="action-card" style="background-color:#f0f0f0; color:#1e293b;">↩ Volver</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+</body>
+</html>

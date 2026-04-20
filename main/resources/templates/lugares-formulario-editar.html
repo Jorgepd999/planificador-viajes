@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${param.lang ?: 'es'}">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Lugar</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+    <header>
+        <h1>✏ Editar lugar de interés</h1>
+    </header>
+
+    <main>
+        <div class="table-container" style="padding:30px; max-width:600px; margin:auto;">
+            <form th:action="@{/web/lugares/editar/{id}(id=${lugar.id.value})}" method="POST">
+
+                <div class="form-group">
+                    <label>Nombre del lugar:</label>
+                    <input type="text" name="nombre" th:value="${lugar.nombre}" required minlength="2">
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción:</label>
+                    <textarea name="descripcion" rows="3" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:5px;" th:text="${lugar.descripcion}"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de actividad:</label>
+                    <select name="tipo" required>
+                        <option value="cultura"   th:selected="${lugar.tipo == 'cultura'}">Cultura</option>
+                        <option value="naturaleza" th:selected="${lugar.tipo == 'naturaleza'}">Naturaleza</option>
+                        <option value="gastronomia" th:selected="${lugar.tipo == 'gastronomia'}">Gastronomía</option>
+                        <option value="ocio"      th:selected="${lugar.tipo == 'ocio'}">Ocio</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Precio de entrada (€):</label>
+                    <input type="number" name="precio" min="0" step="0.01" th:value="${lugar.precio}">
+                </div>
+
+                <div class="form-group">
+                    <label>Duración estimada (horas):</label>
+                    <input type="number" name="duracionVisita" min="0.5" step="0.5" th:value="${lugar.duracionVisita}" required>
+                </div>
+
+                <div class="actions" style="margin-top:20px;">
+                    <button type="submit" class="action-card">💾 Guardar cambios</button>
+                    <a th:href="@{/web/lugares/lista}" class="action-card" style="background-color:#f0f0f0; color:#1e293b;">↩ Volver</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+</body>
+</html>

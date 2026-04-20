@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${param.lang ?: 'es'}">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle del itinerario</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+</head>
+<body>
+
+    <header>
+        <h1>🗺 <span th:text="${itinerario.nombre}">Itinerario</span></h1>
+    </header>
+
+    <main>
+        <div class="actions">
+            <a th:href="@{/web/itinerarios/lista}" class="action-card">↩ Mis itinerarios</a>
+            <form th:action="@{/web/itinerarios/favorito/{id}(id=${itinerario.id.value})}" method="post" style="display:inline">
+                <button type="submit" class="action-card" th:text="${itinerario.favorito ? '⭐ Quitar favorito' : '☆ Añadir favorito'}"></button>
+            </form>
+        </div>
+
+        <!-- Resumen del viaje -->
+        <div class="resumen-viaje">
+            <div class="resumen-item">
+                <span class="resumen-label">🌍 Destino</span>
+                <span class="resumen-valor" th:text="${itinerario.nombreDestino ?: 'Destino ' + itinerario.destinoId}"></span>
+            </div>
+            <div class="resumen-item">
+                <span class="resumen-label">📅 Duración</span>
+                <span class="resumen-valor" th:text="${itinerario.duracion + ' días'}"></span>
+            </div>
+            <div class="resumen-item">
+                <span class="resumen-label">💶 Presupuesto</span>
+                <span class="resumen-valor" th:text="${itinerario.presupuesto + ' €'}"></span>
+            </div>
+            <div class="resumen-item">
+                <span class="resumen-label">🎯 Preferencias</span>
+                <span class="resumen-valor" th:text="${itinerario.preferencias}"></span>
+            </div>
+        </div>
+
+        <!-- Itinerario por días -->
+        <div th:if="${itinerario.items.empty}" style="text-align:center; padding:30px; color:#64748b;">
+            <p>No se encontraron lugares disponibles para los criterios seleccionados.</p>
+            <p>Prueba añadiendo más lugares de interés al destino.</p>
+        </div>
+
+        <div th:unless="${itinerario.items.empty}">
+            <h2 style="margin-top:30px; color:#1e293b;">Actividades planificadas</h2>
+
+            <div th:each="dia : ${#numbers.sequence(1, itinerario.duracion)}" class="dia-card">
+                <div class="dia-header">
+                    <h3>Día <span th:text="${dia}"></span></h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Lugar</th>
+                            <th>Tipo</th>
+                            <th>Precio</th>
+                            <th>Duración</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${itinerario.items}" th:if="${item.dia == dia}">
+                            <td th:text="${item.nombreLugar}"></td>
+                            <td>
+                                <span class="badge" th:text="${item.tipo}"
+                                      th:classappend="${item.tipo == 'cultura'} ? 'badge-cultura' : (${item.tipo == 'naturaleza'} ? 'badge-naturaleza' : (${item.tipo == 'gastronomia'} ? 'badge-gastronomia' : 'badge-ocio'))">
+                                </span>
+                            </td>
+                            <td th:text="${item.precio + ' €'}"></td>
+                            <td th:text="${item.duracionVisita + ' h'}"></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(itinerario.items.?[dia == __${dia}__])}">
+                            <td colspan="4" style="color:#94a3b8; font-style:italic;">Sin actividades programadas</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Coste total -->
+            <div class="resumen-viaje" style="margin-top:20px;">
+                <div class="resumen-item">
+                    <span class="resumen-label">💶 Coste total estimado</span>
+                    <span class="resumen-valor" th:text="${#aggregates.sum(itinerario.items.![precio]) + ' €'}"></span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
