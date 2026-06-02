@@ -1,9 +1,9 @@
 # Planificador de Viajes — API REST
 
 **Versión:** 1.0  
-**Autor:** [Tu nombre]  
+**Autor:** David Aguilar y Jorge Pérez  
 **Ciclo:** Desarrollo de Aplicaciones Web (DAW)  
-**Centro:** [Nombre del centro]  
+**Centro:** IES Enrique Tierno Galvan  
 **Curso:** 2025–2026
 
 ---
