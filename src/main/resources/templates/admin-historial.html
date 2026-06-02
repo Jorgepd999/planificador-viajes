@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{admin.history.pageTitle}">Historial de acciones</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <script>if(localStorage.getItem('darkMode')==='on')document.documentElement.setAttribute('data-theme','dark');</script>
+</head>
+<body>
+
+    <header>
+        <h1 th:text="#{admin.history.title}">📜 Historial de acciones</h1>
+        <div th:replace="~{fragments/header :: controls}"></div>
+    </header>
+
+    <main>
+        <div class="actions">
+            <a th:href="@{/web/menu}" class="action-card" th:text="#{common.mainMenu}">🏠 Menú principal</a>
+            <a th:href="@{/admin/usuarios}" class="action-card" th:text="#{home.admin.users}">👥 Gestionar usuarios</a>
+        </div>
+
+        <div th:if="${acciones.empty}" class="empty-state">
+            <div class="empty-icon">📜</div>
+            <h3 th:text="#{admin.history.empty}">No hay acciones registradas todavía.</h3>
+        </div>
+
+        <table th:unless="${acciones.empty}">
+            <thead>
+                <tr>
+                    <th th:text="#{admin.history.col.date}">Fecha</th>
+                    <th th:text="#{admin.history.col.user}">Usuario</th>
+                    <th th:text="#{admin.history.col.action}">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="a : ${acciones}">
+                    <td th:text="${a.fecha != null ? #temporals.format(a.fecha, 'dd/MM/yyyy HH:mm') : '-'}"></td>
+                    <td th:text="${a.username}"></td>
+                    <td th:text="${a.descripcion}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        const toggleTema = document.getElementById('toggleTema');
+        const aplicarTema = on => { document.documentElement.setAttribute('data-theme', on ? 'dark' : 'light'); toggleTema.textContent = on ? '☀' : '🌙'; };
+        aplicarTema(localStorage.getItem('darkMode') === 'on');
+        toggleTema.addEventListener('click', () => { const on = localStorage.getItem('darkMode') !== 'on'; localStorage.setItem('darkMode', on ? 'on' : 'off'); aplicarTema(on); });
+    </script>
+
+</body>
+</html>

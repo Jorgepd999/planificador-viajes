@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{login.pageTitle}">Iniciar sesión · Planificador de Viajes</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <script>if(localStorage.getItem('darkMode')==='on')document.documentElement.setAttribute('data-theme','dark');</script>
+</head>
+<body class="auth-page">
+
+    <div class="auth-lang">
+        <a href="?lang=es">ES</a>
+        <a href="?lang=en">EN</a>
+    </div>
+
+    <div class="auth-card">
+        <div class="auth-logo">✈</div>
+        <h1 class="auth-brand" th:text="#{common.app.title}">✈ Planificador de Viajes</h1>
+        <p class="auth-subtitle" th:text="#{login.title}">🔒 Iniciar sesión</p>
+
+        <div th:if="${param.error}" class="auth-alert error" th:text="#{login.error}">
+            Usuario o contraseña incorrectos.
+        </div>
+        <div th:if="${param.logout}" class="auth-alert success" th:text="#{login.logout}">
+            Has cerrado sesión correctamente.
+        </div>
+        <div th:if="${param.registered}" class="auth-alert success" th:text="#{login.registered}">
+            Cuenta creada. Ya puedes iniciar sesión.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="auth-field">
+                <label th:text="#{login.username}">Usuario</label>
+                <input type="text" name="username" autofocus required>
+            </div>
+            <div class="auth-field">
+                <label th:text="#{login.password}">Contraseña</label>
+                <input type="password" name="password" required>
+            </div>
+            <button type="submit" class="auth-btn" th:text="#{login.submit}">Entrar</button>
+        </form>
+
+        <a th:href="@{/registro}" class="auth-link" th:text="#{login.noAccount}">¿No tienes cuenta? Regístrate</a>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+@startuml
+title Diagrama de Componentes - Módulo Destinos
+
+package "Destinos" as Destinos {
+
+    package "application" as app {
+        package "command" as cmd
+        package "service" as svc
+        package "useCase" as uc
+    }
+
+    package "domain" as dom {
+        package "error" as err
+        package "model" as mdl
+        package "repository" as repo
+    }
+
+    package "infraestructure" as infra {
+        package "config" as cfg
+        package "db" as db
+        package "mapper" as mpr
+        package "web" as web
+    }
+
+    svc --> uc
+    uc ..> repo
+    repo --> mdl
+    repo --> err
+    infra --> dom
+    web --> svc
+    cfg --> uc
+    cfg --> svc
+    db ..|> repo
+
+}
+
+@enduml

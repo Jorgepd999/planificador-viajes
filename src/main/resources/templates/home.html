@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{common.app.title}">Planificador de Viajes</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <script>if(localStorage.getItem('darkMode')==='on')document.documentElement.setAttribute('data-theme','dark');</script>
+</head>
+<body>
+
+    <header>
+        <h1 th:text="#{common.app.title}">✈ Planificador de Viajes</h1>
+        <div th:replace="~{fragments/header :: controls}"></div>
+    </header>
+
+    <main class="cards-container">
+
+        <a th:href="@{/web/itinerarios/nuevo}" class="card">
+            <div class="icon">🗺</div>
+            <span th:text="#{home.plan}">Planificar viaje</span>
+        </a>
+
+        <a th:href="@{/web/itinerarios/lista}" class="card">
+            <div class="icon">📋</div>
+            <span th:text="#{home.myItineraries}">Mis itinerarios</span>
+        </a>
+
+        <a th:href="@{/web/destinos/lista}" class="card">
+            <div class="icon">🌍</div>
+            <span th:text="#{home.destinations}">Destinos</span>
+        </a>
+
+        <a th:href="@{/web/lugares/lista}" class="card">
+            <div class="icon">📍</div>
+            <span th:text="#{home.places}">Lugares de interés</span>
+        </a>
+
+        <a href="/swagger-ui.html" class="card" sec:authorize="hasRole('ADMIN')">
+            <div class="icon">📡</div>
+            <span th:text="#{home.apiDocs}">API Docs</span>
+        </a>
+
+        <a th:href="@{/admin/usuarios}" class="card" sec:authorize="hasRole('ADMIN')">
+            <div class="icon">👥</div>
+            <span th:text="#{home.admin.users}">Gestionar usuarios</span>
+        </a>
+
+        <a th:href="@{/admin/historial}" class="card" sec:authorize="hasRole('ADMIN')">
+            <div class="icon">📜</div>
+            <span th:text="#{home.admin.history}">Historial de acciones</span>
+        </a>
+
+    </main>
+
+    <script>
+        // Dark mode
+        const toggleTema = document.getElementById('toggleTema');
+        const aplicarTema = on => { document.documentElement.setAttribute('data-theme', on ? 'dark' : 'light'); toggleTema.textContent = on ? '☀' : '🌙'; };
+        aplicarTema(localStorage.getItem('darkMode') === 'on');
+        toggleTema.addEventListener('click', () => { const on = localStorage.getItem('darkMode') !== 'on'; localStorage.setItem('darkMode', on ? 'on' : 'off'); aplicarTema(on); });
+    </script>
+
+</body>
+</html>

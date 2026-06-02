@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{destino.list.pageTitle}">Destinos turísticos</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <script>if(localStorage.getItem('darkMode')==='on')document.documentElement.setAttribute('data-theme','dark');</script>
+</head>
+<body>
+
+    <header>
+        <h1 th:text="#{destino.list.title}">🌍 Destinos turísticos</h1>
+        <div th:replace="~{fragments/header :: controls}"></div>
+    </header>
+
+    <main>
+
+        <div th:if="${mensaje}" class="flash-mensaje" id="flashMsg">
+            <span th:text="${mensaje}"></span>
+        </div>
+
+        <div class="actions">
+            <a th:href="@{/web/destinos/nuevo}" class="action-card" th:text="#{destino.new}">➕ Nuevo destino</a>
+            <a th:href="@{/web/menu}" class="action-card" th:text="#{common.mainMenu}">🏠 Menú principal</a>
+        </div>
+
+        <div th:if="${destinos.empty}" class="empty-state">
+            <div class="empty-icon">🌍</div>
+            <h3 th:text="#{destino.empty.title}">No hay destinos registrados</h3>
+            <p th:text="#{destino.empty.text}">Empieza añadiendo tu primer destino turístico.</p>
+            <a th:href="@{/web/destinos/nuevo}" class="action-card" th:text="#{destino.empty.add}">➕ Añadir destino</a>
+        </div>
+
+        <div th:unless="${destinos.empty}">
+            <div class="lista-header">
+                <div class="buscador-container">
+                    <input type="text" id="buscador" class="buscador" th:placeholder="#{destino.search}" placeholder="🔍 Buscar destino...">
+                    <span id="contador" class="contador"></span>
+                </div>
+                <span class="total-registros" th:text="#{destino.total(${destinos.size()})}"></span>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th th:text="#{destino.col.name}">Destino</th>
+                        <th th:text="#{destino.col.country}">País</th>
+                        <th th:text="#{destino.col.description}">Descripción</th>
+                        <th th:text="#{common.actions}">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-body">
+                    <tr th:each="d : ${destinos}">
+                        <td th:text="${d.id.value}"></td>
+                        <td th:text="${d.nombre}"></td>
+                        <td th:text="${d.pais}"></td>
+                        <td th:text="${d.descripcion}"></td>
+                        <td>
+                            <a th:href="@{/web/destinos/editar/{id}(id=${d.id.value})}" class="btn btn-edit">✏</a>
+                            <form th:action="@{/web/destinos/borrar/{id}(id=${d.id.value})}" method="post" style="display:inline">
+                                <button type="button" class="btn btn-delete btn-confirmar" th:title="#{destino.delete.title}" title="Eliminar destino">🗑</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="paginacion" id="paginacion"></div>
+        </div>
+
+    </main>
+
+    <!-- Modal de confirmación -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box">
+            <p style="margin:0 0 20px; font-size:16px; color:var(--text);" th:text="#{destino.delete.confirm}">¿Seguro que quieres eliminar este destino?</p>
+            <div style="display:flex; gap:12px; justify-content:center;">
+                <button class="action-card" id="modalCancelar" style="background:var(--border); color:var(--text);" th:text="#{common.cancel}">Cancelar</button>
+                <button class="action-card" id="modalConfirmar" style="background:#dc2626; color:white;" th:text="#{common.delete}">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const flashMsg = document.getElementById('flashMsg');
+        if (flashMsg) setTimeout(() => flashMsg.classList.add('flash-oculto'), 3500);
+
+        const filasPorPagina = 5;
+        let paginaActual = 1;
+        const tbody = document.getElementById('tabla-body');
+        const buscador = document.getElementById('buscador');
+        const contador = document.getElementById('contador');
+        const paginacion = document.getElementById('paginacion');
+
+        if (tbody) {
+            function filasFiltradas() {
+                const texto = buscador.value.toLowerCase();
+                return Array.from(tbody.querySelectorAll('tr')).filter(f => f.textContent.toLowerCase().includes(texto));
+            }
+            function renderizar() {
+                const filas = filasFiltradas();
+                const totalPaginas = Math.max(1, Math.ceil(filas.length / filasPorPagina));
+                if (paginaActual > totalPaginas) paginaActual = totalPaginas;
+                const inicio = (paginaActual - 1) * filasPorPagina;
+                Array.from(tbody.querySelectorAll('tr')).forEach(f => f.style.display = 'none');
+                filas.forEach((f, i) => f.style.display = (i >= inicio && i < inicio + filasPorPagina) ? '' : 'none');
+                contador.textContent = filas.length + ' resultado(s)';
+                paginacion.innerHTML = '';
+                if (totalPaginas > 1) {
+                    const btn = (t, a, cb) => { const b = document.createElement('button'); b.textContent = t; b.className = 'pag-btn' + (a ? ' pag-activo' : ''); b.onclick = cb; paginacion.appendChild(b); };
+                    const sep = () => { const s = document.createElement('span'); s.textContent = '…'; s.className = 'pag-sep'; paginacion.appendChild(s); };
+                    const irA = pg => () => { paginaActual = pg; renderizar(); };
+                    const maxVentana = 15;
+                    let ini = Math.max(1, paginaActual - Math.floor(maxVentana / 2));
+                    let fin = Math.min(totalPaginas, ini + maxVentana - 1);
+                    ini = Math.max(1, fin - maxVentana + 1);
+                    btn('‹', false, () => { if (paginaActual > 1) { paginaActual--; renderizar(); } });
+                    if (ini > 1) { btn(1, false, irA(1)); if (ini > 2) sep(); }
+                    for (let p = ini; p <= fin; p++) { btn(p, p === paginaActual, irA(p)); }
+                    if (fin < totalPaginas) { if (fin < totalPaginas - 1) sep(); btn(totalPaginas, false, irA(totalPaginas)); }
+                    btn('›', false, () => { if (paginaActual < totalPaginas) { paginaActual++; renderizar(); } });
+                }
+            }
+            buscador.addEventListener('input', () => { paginaActual = 1; renderizar(); });
+            renderizar();
+        }
+
+        // Modal de confirmación
+        const overlay = document.getElementById('modalOverlay');
+        let formPendiente = null;
+        document.querySelectorAll('.btn-confirmar').forEach(b => b.addEventListener('click', function() {
+            formPendiente = this.closest('form');
+            overlay.classList.add('activo');
+        }));
+        document.getElementById('modalCancelar').addEventListener('click', () => { overlay.classList.remove('activo'); formPendiente = null; });
+        document.getElementById('modalConfirmar').addEventListener('click', () => { if (formPendiente) formPendiente.submit(); });
+        overlay.addEventListener('click', e => { if (e.target === overlay) { overlay.classList.remove('activo'); formPendiente = null; } });
+
+        // Dark mode
+        const toggleTema = document.getElementById('toggleTema');
+        const aplicarTema = on => { document.documentElement.setAttribute('data-theme', on ? 'dark' : 'light'); toggleTema.textContent = on ? '☀' : '🌙'; };
+        aplicarTema(localStorage.getItem('darkMode') === 'on');
+        toggleTema.addEventListener('click', () => { const on = localStorage.getItem('darkMode') !== 'on'; localStorage.setItem('darkMode', on ? 'on' : 'off'); aplicarTema(on); });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{itinerario.view.pageTitle}">Detalle del itinerario</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <script>if(localStorage.getItem('darkMode')==='on')document.documentElement.setAttribute('data-theme','dark');</script>
+</head>
+<body>
+
+    <header>
+        <h1>🗺 <span th:text="${itinerario.nombre}">Itinerario</span></h1>
+        <div th:replace="~{fragments/header :: controls}"></div>
+    </header>
+
+    <main>
+        <div class="actions">
+            <a th:href="@{/web/itinerarios/lista}" class="action-card" th:text="#{itinerario.view.back}">↩ Mis itinerarios</a>
+            <form th:action="@{/web/itinerarios/favorito/{id}(id=${itinerario.id.value})}" method="post" style="display:inline">
+                <button type="submit" class="action-card" th:text="${itinerario.favorito ? #messages.msg('itinerario.view.favRemove') : #messages.msg('itinerario.view.favAdd')}"></button>
+            </form>
+            <a th:href="@{/web/itinerarios/pdf/{id}(id=${itinerario.id.value})}" class="action-card" style="background-color:#dc2626; color:white;" th:text="#{itinerario.view.pdf}">
+                📄 Descargar PDF
+            </a>
+        </div>
+
+        <!-- Resumen del viaje -->
+        <div class="resumen-viaje">
+            <div class="resumen-item">
+                <span class="resumen-label" th:text="#{itinerario.view.destination}">🌍 Destino</span>
+                <span class="resumen-valor" th:text="${itinerario.nombreDestino ?: 'Destino ' + itinerario.destinoId}"></span>
+            </div>
+            <div class="resumen-item">
+                <span class="resumen-label" th:text="#{itinerario.view.duration}">📅 Duración</span>
+                <span class="resumen-valor" th:text="${itinerario.duracion} + ' ' + #{common.days}"></span>
+            </div>
+            <div class="resumen-item">
+                <span class="resumen-label" th:text="#{itinerario.view.budget}">💶 Presupuesto</span>
+                <span class="resumen-valor" th:text="${itinerario.presupuesto + ' €'}"></span>
+            </div>
+            <div class="resumen-item">
+                <span class="resumen-label" th:text="#{itinerario.view.preferences}">🎯 Preferencias</span>
+                <span class="resumen-valor" th:text="${itinerario.preferencias}"></span>
+            </div>
+            <div class="resumen-item" th:if="${itinerario.fechaCreacion != null}">
+                <span class="resumen-label" th:text="#{itinerario.view.created}">📅 Fecha de creación</span>
+                <span class="resumen-valor" th:text="${#temporals.format(itinerario.fechaCreacion, 'dd/MM/yyyy')}"></span>
+            </div>
+        </div>
+
+        <!-- Itinerario por días -->
+        <div th:if="${itinerario.items.empty}" class="empty-state">
+            <div class="empty-icon">😕</div>
+            <h3 th:text="#{itinerario.view.noActivities.title}">No se encontraron actividades</h3>
+            <p th:text="#{itinerario.view.noActivities.text}">El destino seleccionado no tiene lugares que encajen con el presupuesto y las preferencias indicadas.</p>
+            <p style="color:#94a3b8; font-size:13px;" th:text="#{itinerario.view.noActivities.hint}">Prueba a aumentar el presupuesto, cambiar las preferencias o añadir más lugares al destino.</p>
+            <a th:href="@{/web/lugares/nuevo}" class="action-card" style="margin-top:10px;" th:text="#{itinerario.view.noActivities.add}">➕ Añadir lugares al destino</a>
+        </div>
+
+        <div th:unless="${itinerario.items.empty}">
+            <h2 style="margin-top:30px; color:var(--text);" th:text="#{itinerario.view.planned}">Actividades planificadas</h2>
+
+            <div th:each="dia : ${#numbers.sequence(1, itinerario.duracion)}" class="dia-card">
+                <div class="dia-header">
+                    <h3><span th:text="#{common.day}">Día</span> <span th:text="${dia}"></span></h3>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th th:text="#{itinerario.view.col.place}">Lugar</th>
+                            <th th:text="#{itinerario.view.col.type}">Tipo</th>
+                            <th th:text="#{itinerario.view.col.price}">Precio</th>
+                            <th th:text="#{itinerario.view.col.duration}">Duración</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="item : ${itinerario.items}" th:if="${item.dia == dia}">
+                            <td th:text="${item.nombreLugar}"></td>
+                            <td>
+                                <span class="badge" th:text="#{'tipo.' + ${item.tipo}}"
+                                      th:classappend="${item.tipo == 'cultura'} ? 'badge-cultura' : (${item.tipo == 'naturaleza'} ? 'badge-naturaleza' : (${item.tipo == 'gastronomia'} ? 'badge-gastronomia' : 'badge-ocio'))">
+                                </span>
+                            </td>
+                            <td th:text="${item.precio + ' €'}"></td>
+                            <td th:text="${item.duracionVisita + ' h'}"></td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(itinerario.items.?[dia == __${dia}__])}">
+                            <td colspan="4" style="color:#94a3b8; font-style:italic;" th:text="#{itinerario.view.noDay}">Sin actividades programadas</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Coste total -->
+            <div class="resumen-viaje" style="margin-top:20px;">
+                <div class="resumen-item">
+                    <span class="resumen-label" th:text="#{itinerario.view.totalCost}">💶 Coste total estimado</span>
+                    <span class="resumen-valor" th:text="${#aggregates.sum(itinerario.items.![precio]) + ' €'}"></span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <button class="volver-arriba" id="volverArriba" th:title="#{common.backTop}" title="Volver arriba">↑</button>
+
+    <script>
+        const btn = document.getElementById('volverArriba');
+        window.addEventListener('scroll', () => btn.classList.toggle('visible', window.scrollY > 300));
+        btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+        // Dark mode
+        const toggleTema = document.getElementById('toggleTema');
+        const aplicarTema = on => { document.documentElement.setAttribute('data-theme', on ? 'dark' : 'light'); toggleTema.textContent = on ? '☀' : '🌙'; };
+        aplicarTema(localStorage.getItem('darkMode') === 'on');
+        toggleTema.addEventListener('click', () => { const on = localStorage.getItem('darkMode') !== 'on'; localStorage.setItem('darkMode', on ? 'on' : 'off'); aplicarTema(on); });
+    </script>
+
+</body>
+</html>

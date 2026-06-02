@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{itinerario.list.pageTitle}">Mis Itinerarios</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <script>if(localStorage.getItem('darkMode')==='on')document.documentElement.setAttribute('data-theme','dark');</script>
+</head>
+<body>
+
+    <header>
+        <h1 th:text="#{itinerario.list.title}">📋 Mis itinerarios</h1>
+        <div th:replace="~{fragments/header :: controls}"></div>
+    </header>
+
+    <main>
+
+        <div th:if="${mensaje}" class="flash-mensaje" id="flashMsg">
+            <span th:text="${mensaje}"></span>
+        </div>
+
+        <div class="actions">
+            <a th:href="@{/web/itinerarios/nuevo}" class="action-card" th:text="#{itinerario.plan}">🗺 Planificar viaje</a>
+            <a th:href="@{/web/menu}" class="action-card" th:text="#{common.mainMenu}">🏠 Menú principal</a>
+        </div>
+
+        <div th:if="${itinerarios.empty}" class="empty-state">
+            <div class="empty-icon">🗺</div>
+            <h3 th:text="#{itinerario.empty.title}">Todavía no tienes itinerarios</h3>
+            <p th:text="#{itinerario.empty.text}">¡Planifica tu primer viaje y empieza a explorar el mundo!</p>
+            <a th:href="@{/web/itinerarios/nuevo}" class="action-card" th:text="#{itinerario.empty.add}">✨ Planificar viaje</a>
+        </div>
+
+        <div th:unless="${itinerarios.empty}">
+            <div class="lista-header">
+                <div class="buscador-container">
+                    <input type="text" id="buscador" class="buscador" th:placeholder="#{itinerario.search}" placeholder="🔍 Buscar itinerario...">
+                    <span id="contador" class="contador"></span>
+                </div>
+                <span class="total-registros" th:text="#{itinerario.total(${itinerarios.size()})}"></span>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th th:text="#{itinerario.col.name}">Nombre</th>
+                        <th th:if="${esAdmin}" th:text="#{itinerario.col.user}">Usuario</th>
+                        <th th:text="#{itinerario.col.destination}">Destino</th>
+                        <th th:text="#{itinerario.col.duration}">Duración</th>
+                        <th th:text="#{itinerario.col.budget}">Presupuesto</th>
+                        <th th:text="#{itinerario.col.preferences}">Preferencias</th>
+                        <th th:text="#{itinerario.col.created}">Creado</th>
+                        <th th:text="#{itinerario.col.favorite}">Favorito</th>
+                        <th th:text="#{common.actions}">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-body">
+                    <tr th:each="it : ${itinerarios}">
+                        <td th:text="${it.nombre}"></td>
+                        <td th:if="${esAdmin}" th:text="${it.username}"></td>
+                        <td th:text="${it.nombreDestino ?: it.destinoId}"></td>
+                        <td th:text="${it.duracion} + ' ' + #{common.days}"></td>
+                        <td th:text="${it.presupuesto + ' €'}"></td>
+                        <td th:text="${it.preferencias}"></td>
+                        <td th:text="${it.fechaCreacion != null ? #temporals.format(it.fechaCreacion, 'dd/MM/yyyy') : '-'}"></td>
+                        <td>
+                            <form th:action="@{/web/itinerarios/favorito/{id}(id=${it.id.value})}" method="post" style="display:inline">
+                                <button type="submit" class="btn" th:text="${it.favorito ? '⭐' : '☆'}"
+                                        th:title="${it.favorito ? #messages.msg('itinerario.fav.remove') : #messages.msg('itinerario.fav.add')}"></button>
+                            </form>
+                        </td>
+                        <td>
+                            <a th:href="@{/web/itinerarios/ver/{id}(id=${it.id.value})}" class="btn btn-edit" th:title="#{itinerario.view}" title="Ver detalle">👁</a>
+                            <form th:action="@{/web/itinerarios/borrar/{id}(id=${it.id.value})}" method="post" style="display:inline">
+                                <button type="button" class="btn btn-delete btn-confirmar" th:title="#{itinerario.delete.title}" title="Eliminar itinerario">🗑</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="paginacion" id="paginacion"></div>
+        </div>
+
+    </main>
+
+    <!-- Modal de confirmación -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-box">
+            <p style="margin:0 0 20px; font-size:16px; color:var(--text);" th:text="#{itinerario.delete.confirm}">¿Seguro que quieres eliminar este itinerario?</p>
+            <div style="display:flex; gap:12px; justify-content:center;">
+                <button class="action-card" id="modalCancelar" style="background:var(--border); color:var(--text);" th:text="#{common.cancel}">Cancelar</button>
+                <button class="action-card" id="modalConfirmar" style="background:#dc2626; color:white;" th:text="#{common.delete}">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const flashMsg = document.getElementById('flashMsg');
+        if (flashMsg) setTimeout(() => flashMsg.classList.add('flash-oculto'), 3500);
+
+        const filasPorPagina = 8;
+        let paginaActual = 1;
+        const tbody = document.getElementById('tabla-body');
+        const buscador = document.getElementById('buscador');
+        const contador = document.getElementById('contador');
+        const paginacion = document.getElementById('paginacion');
+
+        if (tbody) {
+            function filasFiltradas() {
+                const texto = buscador.value.toLowerCase();
+                return Array.from(tbody.querySelectorAll('tr')).filter(f => f.textContent.toLowerCase().includes(texto));
+            }
+            function renderizar() {
+                const filas = filasFiltradas();
+                const totalPaginas = Math.max(1, Math.ceil(filas.length / filasPorPagina));
+                if (paginaActual > totalPaginas) paginaActual = totalPaginas;
+                const inicio = (paginaActual - 1) * filasPorPagina;
+                Array.from(tbody.querySelectorAll('tr')).forEach(f => f.style.display = 'none');
+                filas.forEach((f, i) => f.style.display = (i >= inicio && i < inicio + filasPorPagina) ? '' : 'none');
+                contador.textContent = filas.length + ' resultado(s)';
+                paginacion.innerHTML = '';
+                if (totalPaginas > 1) {
+                    const btn = (t, a, cb) => { const b = document.createElement('button'); b.textContent = t; b.className = 'pag-btn' + (a ? ' pag-activo' : ''); b.onclick = cb; paginacion.appendChild(b); };
+                    const sep = () => { const s = document.createElement('span'); s.textContent = '…'; s.className = 'pag-sep'; paginacion.appendChild(s); };
+                    const irA = pg => () => { paginaActual = pg; renderizar(); };
+                    const maxVentana = 15;
+                    let ini = Math.max(1, paginaActual - Math.floor(maxVentana / 2));
+                    let fin = Math.min(totalPaginas, ini + maxVentana - 1);
+                    ini = Math.max(1, fin - maxVentana + 1);
+                    btn('‹', false, () => { if (paginaActual > 1) { paginaActual--; renderizar(); } });
+                    if (ini > 1) { btn(1, false, irA(1)); if (ini > 2) sep(); }
+                    for (let p = ini; p <= fin; p++) { btn(p, p === paginaActual, irA(p)); }
+                    if (fin < totalPaginas) { if (fin < totalPaginas - 1) sep(); btn(totalPaginas, false, irA(totalPaginas)); }
+                    btn('›', false, () => { if (paginaActual < totalPaginas) { paginaActual++; renderizar(); } });
+                }
+            }
+            buscador.addEventListener('input', () => { paginaActual = 1; renderizar(); });
+            renderizar();
+        }
+
+        // Modal de confirmación
+        const overlay = document.getElementById('modalOverlay');
+        let formPendiente = null;
+        document.querySelectorAll('.btn-confirmar').forEach(b => b.addEventListener('click', function() {
+            formPendiente = this.closest('form');
+            overlay.classList.add('activo');
+        }));
+        document.getElementById('modalCancelar').addEventListener('click', () => { overlay.classList.remove('activo'); formPendiente = null; });
+        document.getElementById('modalConfirmar').addEventListener('click', () => { if (formPendiente) formPendiente.submit(); });
+        overlay.addEventListener('click', e => { if (e.target === overlay) { overlay.classList.remove('activo'); formPendiente = null; } });
+
+        // Dark mode
+        const toggleTema = document.getElementById('toggleTema');
+        const aplicarTema = on => { document.documentElement.setAttribute('data-theme', on ? 'dark' : 'light'); toggleTema.textContent = on ? '☀' : '🌙'; };
+        aplicarTema(localStorage.getItem('darkMode') === 'on');
+        toggleTema.addEventListener('click', () => { const on = localStorage.getItem('darkMode') !== 'on'; localStorage.setItem('darkMode', on ? 'on' : 'off'); aplicarTema(on); });
+    </script>
+
+</body>
+</html>

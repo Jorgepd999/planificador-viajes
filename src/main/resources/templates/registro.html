@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{registro.pageTitle}">Registro · Planificador de Viajes</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <script>if(localStorage.getItem('darkMode')==='on')document.documentElement.setAttribute('data-theme','dark');</script>
+</head>
+<body class="auth-page">
+
+    <div class="auth-lang">
+        <a href="?lang=es">ES</a>
+        <a href="?lang=en">EN</a>
+    </div>
+
+    <div class="auth-card">
+        <div class="auth-logo">✈</div>
+        <h1 class="auth-brand" th:text="#{common.app.title}">✈ Planificador de Viajes</h1>
+        <p class="auth-subtitle" th:text="#{registro.title}">📝 Crear cuenta</p>
+
+        <div th:if="${param.error}" class="auth-alert error" th:text="#{registro.error}">
+            Ese nombre de usuario ya existe.
+        </div>
+
+        <form th:action="@{/registro}" method="post">
+            <div class="auth-field">
+                <label th:text="#{registro.nombre}">Nombre completo</label>
+                <input type="text" name="nombre" autofocus required>
+            </div>
+            <div class="auth-field">
+                <label th:text="#{registro.username}">Usuario</label>
+                <input type="text" name="username" required>
+            </div>
+            <div class="auth-field">
+                <label th:text="#{registro.email}">Email</label>
+                <input type="email" name="email">
+            </div>
+            <div class="auth-field">
+                <label th:text="#{registro.password}">Contraseña</label>
+                <input type="password" name="password" required minlength="4">
+            </div>
+            <button type="submit" class="auth-btn" th:text="#{registro.submit}">Registrarse</button>
+        </form>
+
+        <a th:href="@{/login}" class="auth-link" th:text="#{registro.haveAccount}">¿Ya tienes cuenta? Inicia sesión</a>
+    </div>
+
+</body>
+</html>

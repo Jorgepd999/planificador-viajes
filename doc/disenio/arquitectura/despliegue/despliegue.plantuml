@@ -1,0 +1,20 @@
+@startuml
+title Diagrama de Despliegue - Planificador de Viajes
+
+node "Máquina local / Servidor" {
+    node "JVM" {
+        component "Spring Boot\n(Embedded Tomcat)" <<spring boot>> as SpringBoot
+        component "Thymeleaf\n(Motor de plantillas)" as Thymeleaf
+        component "Spring Data JPA" as JPA
+    }
+    database "H2 Database\n(en memoria)" as H2
+}
+
+actor "Navegador / Cliente REST" as Cliente
+
+Cliente --> SpringBoot : HTTP :8080
+SpringBoot --> Thymeleaf : renderiza HTML
+SpringBoot --> JPA : persiste/consulta
+JPA --> H2
+
+@enduml

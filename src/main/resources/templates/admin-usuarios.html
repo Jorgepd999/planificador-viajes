@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{admin.users.pageTitle}">Gestión de usuarios</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <script>if(localStorage.getItem('darkMode')==='on')document.documentElement.setAttribute('data-theme','dark');</script>
+</head>
+<body>
+
+    <header>
+        <h1 th:text="#{admin.users.title}">👥 Gestión de usuarios</h1>
+        <div th:replace="~{fragments/header :: controls}"></div>
+    </header>
+
+    <main>
+        <div class="actions">
+            <a th:href="@{/web/menu}" class="action-card" th:text="#{common.mainMenu}">🏠 Menú principal</a>
+            <a th:href="@{/admin/historial}" class="action-card" th:text="#{home.admin.history}">📜 Historial</a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th th:text="#{admin.users.col.username}">Usuario</th>
+                    <th th:text="#{admin.users.col.nombre}">Nombre</th>
+                    <th th:text="#{admin.users.col.email}">Email</th>
+                    <th th:text="#{admin.users.col.role}">Rol</th>
+                    <th th:text="#{admin.users.col.action}">Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="u : ${usuarios}">
+                    <td th:text="${u.username}"></td>
+                    <td th:text="${u.nombre}"></td>
+                    <td th:text="${u.email}"></td>
+                    <td th:text="${u.rol}"></td>
+                    <td>
+                        <form th:action="@{/admin/usuarios/rol}" method="post" style="display:flex; gap:6px;">
+                            <input type="hidden" name="username" th:value="${u.username}">
+                            <select name="rol">
+                                <option th:each="r : ${roles}" th:value="${r}" th:text="${r}"
+                                        th:selected="${r == u.rol}"></option>
+                            </select>
+                            <button type="submit" class="btn btn-edit" th:text="#{admin.users.change}">Cambiar</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+
+    <script>
+        const toggleTema = document.getElementById('toggleTema');
+        const aplicarTema = on => { document.documentElement.setAttribute('data-theme', on ? 'dark' : 'light'); toggleTema.textContent = on ? '☀' : '🌙'; };
+        aplicarTema(localStorage.getItem('darkMode') === 'on');
+        toggleTema.addEventListener('click', () => { const on = localStorage.getItem('darkMode') !== 'on'; localStorage.setItem('darkMode', on ? 'on' : 'off'); aplicarTema(on); });
+    </script>
+
+</body>
+</html>

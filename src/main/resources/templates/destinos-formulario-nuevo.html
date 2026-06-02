@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{destino.new.pageTitle}">Nuevo Destino</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <script>if(localStorage.getItem('darkMode')==='on')document.documentElement.setAttribute('data-theme','dark');</script>
+</head>
+<body>
+
+    <header>
+        <h1 th:text="#{destino.new.title}">🌍 Nuevo destino turístico</h1>
+        <div th:replace="~{fragments/header :: controls}"></div>
+    </header>
+
+    <main>
+        <div class="table-container" style="padding:30px; max-width:600px; margin:auto;">
+            <form th:action="@{/web/destinos/nuevo}" method="POST">
+
+                <div class="form-group">
+                    <label th:text="#{destino.form.name}">Nombre del destino:</label>
+                    <input type="text" name="nombre" required minlength="2">
+                </div>
+
+                <div class="form-group">
+                    <label th:text="#{destino.form.country}">País:</label>
+                    <input type="text" name="pais" required minlength="2">
+                </div>
+
+                <div class="form-group">
+                    <label th:text="#{destino.form.description}">Descripción:</label>
+                    <textarea name="descripcion" rows="3"></textarea>
+                </div>
+
+                <div class="actions" style="margin-top:20px;">
+                    <button type="submit" class="action-card" th:text="#{common.save}">💾 Guardar</button>
+                    <a th:href="@{/web/destinos/lista}" class="action-card" style="background:var(--border); color:var(--text);" th:text="#{common.back}">↩ Volver</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        const toggleTema = document.getElementById('toggleTema');
+        const aplicarTema = on => { document.documentElement.setAttribute('data-theme', on ? 'dark' : 'light'); toggleTema.textContent = on ? '☀' : '🌙'; };
+        aplicarTema(localStorage.getItem('darkMode') === 'on');
+        toggleTema.addEventListener('click', () => { const on = localStorage.getItem('darkMode') !== 'on'; localStorage.setItem('darkMode', on ? 'on' : 'off'); aplicarTema(on); });
+    </script>
+
+</body>
+</html>

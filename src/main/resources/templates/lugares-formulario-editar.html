@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{lugar.edit.pageTitle}">Editar Lugar</title>
+    <link rel="stylesheet" th:href="@{/css/estilos.css}">
+    <script>if(localStorage.getItem('darkMode')==='on')document.documentElement.setAttribute('data-theme','dark');</script>
+</head>
+<body>
+
+    <header>
+        <h1 th:text="#{lugar.edit.title}">✏ Editar lugar de interés</h1>
+        <div th:replace="~{fragments/header :: controls}"></div>
+    </header>
+
+    <main>
+        <div class="table-container" style="padding:30px; max-width:600px; margin:auto;">
+            <form th:action="@{/web/lugares/editar/{id}(id=${lugar.id.value})}" method="POST">
+
+                <div class="form-group">
+                    <label th:text="#{lugar.form.name}">Nombre del lugar:</label>
+                    <input type="text" name="nombre" th:value="${lugar.nombre}" required minlength="2">
+                </div>
+
+                <div class="form-group">
+                    <label th:text="#{lugar.form.description}">Descripción:</label>
+                    <textarea name="descripcion" rows="3" th:text="${lugar.descripcion}"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label th:text="#{lugar.form.type}">Tipo de actividad:</label>
+                    <select name="tipo" required>
+                        <option value="cultura"    th:selected="${lugar.tipo == 'cultura'}" th:text="#{tipo.cultura}">Cultura</option>
+                        <option value="naturaleza"  th:selected="${lugar.tipo == 'naturaleza'}" th:text="#{tipo.naturaleza}">Naturaleza</option>
+                        <option value="gastronomia" th:selected="${lugar.tipo == 'gastronomia'}" th:text="#{tipo.gastronomia}">Gastronomía</option>
+                        <option value="ocio"       th:selected="${lugar.tipo == 'ocio'}" th:text="#{tipo.ocio}">Ocio</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label th:text="#{lugar.form.price}">Precio de entrada (€):</label>
+                    <input type="number" name="precio" min="0" step="0.01" th:value="${lugar.precio}">
+                </div>
+
+                <div class="form-group">
+                    <label th:text="#{lugar.form.duration}">Duración estimada (horas):</label>
+                    <input type="number" name="duracionVisita" min="0.5" step="0.5" th:value="${lugar.duracionVisita}" required>
+                </div>
+
+                <div class="actions" style="margin-top:20px;">
+                    <button type="submit" class="action-card" th:text="#{common.saveChanges}">💾 Guardar cambios</button>
+                    <a th:href="@{/web/lugares/lista}" class="action-card" style="background:var(--border); color:var(--text);" th:text="#{common.back}">↩ Volver</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        const toggleTema = document.getElementById('toggleTema');
+        const aplicarTema = on => { document.documentElement.setAttribute('data-theme', on ? 'dark' : 'light'); toggleTema.textContent = on ? '☀' : '🌙'; };
+        aplicarTema(localStorage.getItem('darkMode') === 'on');
+        toggleTema.addEventListener('click', () => { const on = localStorage.getItem('darkMode') !== 'on'; localStorage.setItem('darkMode', on ? 'on' : 'off'); aplicarTema(on); });
+    </script>
+
+</body>
+</html>

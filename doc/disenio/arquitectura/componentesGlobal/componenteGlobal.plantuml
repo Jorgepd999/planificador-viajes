@@ -1,0 +1,37 @@
+@startuml
+title Arquitectura Global - Planificador de Viajes
+
+package "Destinos" as Destinos {
+}
+
+package "Itinerarios" as Itinerarios {
+}
+
+package "Common" as Common {
+}
+
+package "Infraestructura de Datos" as Datos {
+    component "Spring Data JPA" as SpringData
+    component "H2 Database" as H2
+}
+
+package "Infraestructura Web" as Web {
+    component "Spring MVC (REST)" as REST
+    component "Thymeleaf (Vistas)" as Thymeleaf
+    component "OpenAPI / Swagger" as Swagger
+}
+
+Destinos ..> Common
+Itinerarios ..> Common
+Itinerarios ..> Destinos : consulta lugares
+
+Destinos --> SpringData
+Itinerarios --> SpringData
+SpringData --> H2 : Persistencia
+
+REST --> Destinos
+REST --> Itinerarios
+Thymeleaf --> Destinos
+Thymeleaf --> Itinerarios
+
+@enduml
