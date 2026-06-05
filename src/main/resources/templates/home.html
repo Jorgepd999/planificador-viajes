@@ -8,10 +8,54 @@
 </head>
 <body>
 
-    <header>
-        <h1 th:text="#{common.app.title}">✈ Planificador de Viajes</h1>
-        <div th:replace="~{fragments/header :: controls}"></div>
-    </header>
+   <header>
+
+    <a th:href="@{/}" class="logo-routopia" aria-label="Routopia">
+
+        <svg viewBox="0 0 660 192" xmlns="http://www.w3.org/2000/svg">
+
+            <rect class="logo-bg" x="18" y="11" width="168" height="168" rx="32"/>
+
+            <circle class="star-1" cx="44" cy="54" r="2.2"/>
+            <circle class="star-2" cx="90" cy="36" r="2"/>
+            <circle class="star-3" cx="152" cy="148" r="2"/>
+            <circle class="star-4" cx="168" cy="90" r="1.8"/>
+            <circle class="star-5" cx="36" cy="108" r="1.6"/>
+            <circle class="star-6" cx="120" cy="165" r="1.8"/>
+
+            <path class="route"
+                  d="M 50 158 C 72 138, 96 116, 122 94 C 140 80, 152 74, 157 70"/>
+
+            <circle class="node-1-outer" cx="78" cy="132" r="5.5"/>
+            <circle class="node-1-inner" cx="78" cy="132" r="2.5"/>
+
+            <circle class="node-2-outer" cx="116" cy="98" r="5.5"/>
+            <circle class="node-2-inner" cx="116" cy="98" r="2.5"/>
+
+            <circle class="start-outer" cx="50" cy="158" r="12"/>
+            <circle class="start-inner" cx="50" cy="158" r="5.5"/>
+
+            <path class="pin"
+                  d="M 157 70 C 145 60, 140 53, 140 46 A 17 17 0 0 0 174 46 C 174 53, 169 60, 157 70 Z"/>
+
+            <circle class="pin-center" cx="157" cy="46" r="7"/>
+
+            <text class="logo-text" y="114">
+                <tspan x="212" class="logo-r">R</tspan>
+                <tspan class="logo-name">outopia</tspan>
+            </text>
+
+            <text class="logo-tagline" x="215" y="147">
+                planifica · descubre · viaja
+            </text>
+
+        </svg>
+
+    </a>
+
+    <div th:replace="~{fragments/header :: controls}"></div>
+
+</header>
 
     <main class="cards-container">
 

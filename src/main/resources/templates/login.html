@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}">
+
 <head>
     <meta charset="UTF-8">
     <title th:text="#{login.pageTitle}">Iniciar sesión · Planificador de Viajes</title>
     <link rel="stylesheet" th:href="@{/css/estilos.css}">
-    <script>if(localStorage.getItem('darkMode')==='on')document.documentElement.setAttribute('data-theme','dark');</script>
+    <script>if (localStorage.getItem('darkMode') === 'on') document.documentElement.setAttribute('data-theme', 'dark');</script>
 </head>
+
 <body class="auth-page">
 
     <div class="auth-lang">
@@ -14,8 +16,35 @@
     </div>
 
     <div class="auth-card">
-        <div class="auth-logo">✈</div>
-        <h1 class="auth-brand" th:text="#{common.app.title}">✈ Planificador de Viajes</h1>
+        <div class="auth-logo">
+
+            <svg viewBox="18 11 168 168" xmlns="http://www.w3.org/2000/svg">
+
+                <rect class="logo-bg" x="18" y="11" width="168" height="168" rx="32" />
+
+                <path class="route" d="M 50 158 C 72 138, 96 116, 122 94 C 140 80, 152 74, 157 70" />
+
+                <circle class="node-1-outer" cx="78" cy="132" r="5.5" />
+                <circle class="node-1-inner" cx="78" cy="132" r="2.5" />
+
+                <circle class="node-2-outer" cx="116" cy="98" r="5.5" />
+                <circle class="node-2-inner" cx="116" cy="98" r="2.5" />
+
+                <circle class="start-outer" cx="50" cy="158" r="12" />
+                <circle class="start-inner" cx="50" cy="158" r="5.5" />
+
+                <path class="pin"
+                    d="M 157 70 C 145 60, 140 53, 140 46 A 17 17 0 0 0 174 46 C 174 53, 169 60, 157 70 Z" />
+
+                <circle class="pin-center" cx="157" cy="46" r="7" />
+
+            </svg>
+
+        </div>
+
+        <h1 class="auth-brand">
+            <span class="brand-r">R</span>outopia
+        </h1>
         <p class="auth-subtitle" th:text="#{login.title}">🔒 Iniciar sesión</p>
 
         <div th:if="${param.error}" class="auth-alert error" th:text="#{login.error}">
@@ -44,4 +73,5 @@
     </div>
 
 </body>
+
 </html>

@@ -766,3 +766,142 @@ tbody tr:nth-child(8)  { animation-delay: 0.24s; }
     color: var(--text-muted);
     user-select: none;
 }
+
+
+/* ===== LOGO ROUTOPIA ===== */
+
+.logo-routopia {
+    display: block;
+    width: 320px;
+    text-decoration: none;
+}
+
+.logo-routopia svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.logo-bg {
+    fill: #0D3B66;
+}
+
+.star-1,
+.star-2,
+.star-3,
+.star-4,
+.star-5,
+.star-6 {
+    fill: #fff;
+}
+
+.star-1 { opacity: .10; }
+.star-2,
+.star-3 { opacity: .09; }
+.star-4,
+.star-5 { opacity: .08; }
+.star-6 { opacity: .07; }
+
+.route {
+    stroke: #fff;
+    stroke-width: 2.5;
+    fill: none;
+    stroke-dasharray: 7 5;
+    stroke-linecap: round;
+    opacity: .38;
+}
+
+.node-1-outer,
+.node-2-outer {
+    fill: #fff;
+    opacity: .6;
+}
+
+.node-1-inner,
+.node-2-inner,
+.start-inner,
+.pin-center {
+    fill: #0D3B66;
+    opacity: .6;
+}
+
+.start-outer,
+.pin {
+    fill: #F39C12;
+}
+
+.logo-text {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 57px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+}
+
+.logo-r {
+    fill: #F39C12;
+}
+
+.logo-name {
+    fill: #0D3B66;
+}
+
+.logo-tagline {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    fill: #7FB3D3;
+}
+
+
+.auth-logo {
+    width: 90px;
+    margin: 0 auto 1rem;
+}
+
+.auth-logo svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.auth-brand {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: .5rem;
+}
+
+.auth-brand .brand-r {
+    color: #F39C12;
+}
+
+.auth-page .logo-bg {
+    fill: #0D3B66;
+}
+
+.auth-page .route {
+    stroke: #fff;
+    stroke-width: 2.5;
+    fill: none;
+    stroke-dasharray: 7 5;
+    stroke-linecap: round;
+    opacity: .38;
+}
+
+.auth-page .node-1-outer,
+.auth-page .node-2-outer {
+    fill: #fff;
+    opacity: .6;
+}
+
+.auth-page .node-1-inner,
+.auth-page .node-2-inner,
+.auth-page .start-inner,
+.auth-page .pin-center {
+    fill: #0D3B66;
+}
+
+.auth-page .start-outer,
+.auth-page .pin {
+    fill: #F39C12;
+}
